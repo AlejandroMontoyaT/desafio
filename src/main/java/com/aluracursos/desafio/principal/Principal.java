@@ -16,6 +16,7 @@ public class Principal {
     private ConsumoAPI consumoAPI = new ConsumoAPI();
     private ConvierteDatos conversor = new ConvierteDatos();
     private Scanner teclado = new Scanner(System.in);
+    //Metodo que muestra el menu para optener los datos de los libros
     public void muestraElMenu(){
         var json = consumoAPI.obtenerDatos(URL_BASE);
         System.out.println(json);
@@ -36,23 +37,23 @@ public class Principal {
         json = consumoAPI.obtenerDatos(URL_BASE+"?search=" + tituloLibro.replace(" ","+"));
         var datosBusqueda = conversor.obtenerDatos(json, Datos.class);
         Optional<DatosLibros> libroBuscado = datosBusqueda.resultados().stream()
-                .filter(l -> l.titulo().toUpperCase().contains(tituloLibro.toUpperCase()))
-                .findFirst();
-        if(libroBuscado.isPresent()){
-            System.out.println("Libro Encontrado ");
-            System.out.println(libroBuscado.get());
-        }else {
+                .filter(l -> l.titulo().toUpperCase().contains(tituloLibro.toUpperCase()))//Busqueda por nombre
+                .findFirst(); //Obtiene el primer libro que cumpla con la condicion
+        if(libroBuscado.isPresent()){ //Si el libro fue encontrado
+            System.out.println("Libro Encontrado "); //Imprime el libro encontrado
+            System.out.println(libroBuscado.get());// Imprime el libro encontrado
+        }else {//Si el libro no fue encontrado
             System.out.println("Libro no encontrado");
         }
 
         //Trabajando con estadisticas
-        DoubleSummaryStatistics est = datos.resultados().stream()
-                .filter(d -> d.numeroDeDescargas() >0 )
-                .collect(Collectors.summarizingDouble(DatosLibros::numeroDeDescargas));
-        System.out.println("Cantidad media de descargas: " + est.getAverage());
-        System.out.println("Cantidad máxima de descargas: "+ est.getMax());
-        System.out.println("Cantidad mínima de descargas: " + est.getMin());
-        System.out.println(" Cantidad de registros evaluados para calcular las estadisticas: " + est.getCount());
+        DoubleSummaryStatistics est = datos.resultados().stream() //Obtiene las estadisticas de los libros
+                .filter(d -> d.numeroDeDescargas() >0 ) //Filtra los libros que tengan descargas
+                .collect(Collectors.summarizingDouble(DatosLibros::numeroDeDescargas)); //Obtiene las estadisticas de los libros
+        System.out.println("Cantidad media de descargas: " + est.getAverage()); //Imprime la cantidad media de descargas
+        System.out.println("Cantidad máxima de descargas: "+ est.getMax()); //Imprime la cantidad máxima de descargas
+        System.out.println("Cantidad mínima de descargas: " + est.getMin()); //Imprime la cantidad mínima de descargas
+        System.out.println(" Cantidad de registros evaluados para calcular las estadisticas: " + est.getCount()); //Imprime la cantidad de registros evaluados para calcular las estadisticas
 
     }
 }
